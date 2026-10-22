@@ -742,10 +742,6 @@ svg.spk .vx{fill:none;stroke:#e06a5a;stroke-width:2.4;stroke-linecap:round;opaci
 .uc.hold{outline:2px solid var(--gold2);outline-offset:-2px;animation:holdp .32s ease-in-out infinite alternate}
 .uc.hold.fast{outline-color:#ffe9a8;animation-duration:.12s;box-shadow:0 0 18px rgba(242,212,135,.55)}
 @keyframes holdp{from{filter:brightness(1)}to{filter:brightness(1.25)}}
-/* Bau- und Forschungsmenü als Vollbild (besser lesbar auf dem Handy) */
-#bd,#rm{inset:0!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:12!important;pointer-events:auto!important;align-items:stretch!important;justify-content:center!important;background:rgba(6,8,9,.86)!important;-webkit-backdrop-filter:blur(5px)!important;backdrop-filter:blur(5px)!important;padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important}
-#bd .bmc,#rm .bmc{width:min(100%,1200px)!important;height:100%!important;max-height:none!important;border-radius:16px!important;font-size:14px!important;padding:14px 14px 12px!important}
-#bd .sgrip,#rm .sgrip,#bd .shz,#rm .shz{display:none!important}
 #rm .rcd{padding:8px 10px;gap:2px}
 #rm .rcd b{font-size:14px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
 #rm .rcd p{display:-webkit-box!important;font-size:12px;-webkit-line-clamp:2;min-height:0}
@@ -853,6 +849,22 @@ body.gzmode #mn [data-a="m,b"],body.gzmode #mn [data-a="m,r"],body.gzmode #mn [d
 .tut.cmp.fs{z-index:16;top:auto!important;bottom:max(10px,env(safe-area-inset-bottom));left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:auto!important;max-width:min(560px,calc(100vw - 24px));padding:7px 14px!important;gap:2px!important;pointer-events:none;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 0 1px rgba(242,212,135,.45);animation:none}
 .tut.cmp.fs .tuth,.tut.cmp.fs .go{display:none}.tut.cmp.fs h3{font-size:15px!important;line-height:1.25;margin:0;text-align:center}.tut.cmp.fs .tutp{font-size:12px;text-align:center}
 @media (max-height:480px){.tut.cmp.fs.gs{bottom:auto;top:max(6px,env(safe-area-inset-top))!important;padding:5px 12px!important}.tut.cmp.fs.gs h3{font-size:13.5px!important}.tut.cmp.fs.gs .tutp{display:none}}
+
+/* ===== Untere Hauptfenster (Bauen, Rekrutieren, Forschung, Befehle, General/Regent, Perks): alle gleich groß,
+   etwas breiter als früher, die Knopfleiste unten bleibt immer frei ===== */
+:root{--shW:min(calc(100vw - 16px),1200px);--shH:min(58vh,calc(100vh - var(--mnh,0px) - 64px))}
+#bd .bmc,#rk .bmc,#rm .bmc,#cm .bmc,#pk .bmc,#bm.mb .bmc{width:var(--shW)!important;height:var(--shH)!important;max-height:var(--shH)!important}
+#bm.mb .bmc{display:flex;flex-direction:column;overflow-y:auto}
+@media (max-height:480px) and (min-aspect-ratio:3/2){
+ :root{--shW:min(calc(100vw - 12px),max(70vw,480px));--shH:calc(100vh - var(--mnh,67px) - 54px)}
+ #rm,#rk,#cm,#bd,#pk,#bm.mb{left:0;right:0;bottom:var(--mnh,67px);justify-content:flex-start;padding:0 6px 4px max(6px,env(safe-area-inset-left))}
+ .tut.cmp:not(.fs){left:auto!important;right:8px!important;transform:none!important;width:calc(100vw - var(--shW) - 26px)!important;min-width:180px;top:calc(max(6px,env(safe-area-inset-top)) + 46px)!important}
+ .tut.cmp:not(.fs) h3{font-size:14.5px!important}
+ /* Meldungen rechts neben dem offenen Fenster, damit sie nicht verdeckt werden */
+ body.tutmode #alerts{left:8px;right:calc(min(370px,45vw) + 20px);width:auto;transform:none}
+ body.shopen #alerts{left:calc(var(--shW) + 14px);right:6px;width:auto;transform:none;top:52px}
+ body.shopen #ms{left:calc(var(--shW) + 14px);right:6px;top:120px;font-size:15px}
+ body.tutmode.shopen #alerts{top:172px}body.tutmode.shopen #ms{top:240px}}
 </style></head><body>
 <div id="top">
  <div class="hl">
@@ -4240,7 +4252,7 @@ let rcat='heer';
 function rmOpen(){$('rm').style.display='flex';FITR.rm=0;SHB.rm=0;rmRender();mnSync()}
 function rmClose(){$('rm').style.display='none';mnSync()}
 /* Untere Leiste: der Knopf des offenen Fensters ist golden hinterlegt */
-function mnSync(){{const mn=$('mn');if(mn){const n=[...mn.children].filter(b=>b.style.display!=='none').length;if(mn.dataset.n!==String(n))mn.dataset.n=n}}const m={b:'bd',r:'rk',f:'rm',s:'cm',p:'pk'};document.querySelectorAll('#mn button').forEach(b=>{const k=(b.dataset.a||'').split(',')[1];let on=false;if(m[k])on=$(m[k]).style.display==='flex';else if(k==='g')on=gmove||(!!su&&!!su.gen&&su.s===0&&$('bm').style.display==='flex');b.classList.toggle('on',on)});sheetPos()}
+function mnSync(){{const o=id=>{const e=$(id);return!!e&&e.style.display==='flex'};document.body.classList.toggle('shopen',['bd','rk','rm','cm','pk'].some(o)||(o('bm')&&$('bm').classList.contains('mb')))}{const mn=$('mn');if(mn){const n=[...mn.children].filter(b=>b.style.display!=='none').length;if(mn.dataset.n!==String(n))mn.dataset.n=n}}const m={b:'bd',r:'rk',f:'rm',s:'cm',p:'pk'};document.querySelectorAll('#mn button').forEach(b=>{const k=(b.dataset.a||'').split(',')[1];let on=false;if(m[k])on=$(m[k]).style.display==='flex';else if(k==='g')on=gmove||(!!su&&!!su.gen&&su.s===0&&$('bm').style.display==='flex');b.classList.toggle('on',on)});sheetPos()}
 function sheetPos(){const mn=$('mn'),u=$('ui');let h=0;if(mn&&u&&u.style.display!=='none'&&mn.offsetParent!==null){const r=mn.getBoundingClientRect();if(r.height>0)h=Math.max(0,innerHeight-r.top)}document.documentElement.style.setProperty('--mnh',h+'px')}
 addEventListener('resize',()=>setTimeout(sheetPos,60));
 function rmRender(){const S=st[0];
@@ -4290,7 +4302,7 @@ const dmgAll=()=>repAll();
 function bmOpen(){$('bm').style.display='flex';bmRender();mnSync()}
 function bmClose(){$('bm').style.display='none';sb=null;KH.sel=false;if(!gmove)su=null;mnSync()}
 function syncSb(){if(!sb||blds.includes(sb))return;const S=st[0];sb=sb.type==='hall'?S.hall:S.b[sb.type]||null}
-function bmRender(){$('bm').classList.add('sheet');if(KH.sel&&KH.on)return khRender();if(su){umRender();return}const S=st[0],o=sb;if(!o||!blds.includes(o))return bmClose();if(o.s!==0)return ebRender(o);const t=o.type,bt=(a,x,c)=>`<button data-a="${a}" data-c="${c}">${x}</button>`,ok=x=>`<button class="ok">✔ ${x}</button>`;
+function bmRender(){$('bm').classList.add('sheet');$('bm').classList.toggle('mb',!!(su&&su.s===0&&(su.gen||su.reg)&&!KH.sel));if(KH.sel&&KH.on)return khRender();if(su){umRender();return}const S=st[0],o=sb;if(!o||!blds.includes(o))return bmClose();if(o.s!==0)return ebRender(o);const t=o.type,bt=(a,x,c)=>`<button data-a="${a}" data-c="${c}">${x}</button>`,ok=x=>`<button class="ok">✔ ${x}</button>`;
  const name=t==='wall'?(o.gate?'Torhaus · ':'')+WN[Math.max(0,S.wl-1)]:t==='tower'?TN[Math.max(0,S.tw-1)]:bn(t,0),lv=t==='hall'?S.lv:t==='frg'?(S.f3?3:S.fu?2:1):LV[t]&&LV[t].length?o.lv:0;
  let ds=BDESC[t];if(t==='tower')ds=['Turm','Katapultturm mit Flächenschaden','Feuerkatapultturm mit Brandflächen'][o.kind]+` · Reichweite ${Math.round(bldRange(o))} · Schaden ${Math.round(o.dm*(1+S.bon.tw))}`;
  if(t==='wall'&&o.gate)ds=`Durchgang für eigene Truppen · 2 Pfeile alle ${(o.gcd/(1+S.bon.gts)).toFixed(1).replace('.',',')} s · Schaden ${Math.round(o.dm*(1+S.bon.gtd))} · Reichweite ${Math.round(bldRange(o))}`;
@@ -4325,7 +4337,7 @@ function genSec(v){const S=st[0],G=GEN[S.f],u=GENU,alive=S.gen&&S.gen.hp>0,A={R:
  const btn=alive?`<small>✔ führt dein Heer</small>`:S.lv<5?`<small>🔒 Halle Stufe 5 nötig</small>`:`<span class="ucc"><i class="coin"></i> ${u[0].toLocaleString(LOC)}</span><small>rekrutieren</small>`;
  return `<div class="uc gcd${alive||S.lv<5?' lkd':''}${v?' v':''}" ${!alive&&S.lv>=5?`data-a="gen" data-c="${u[0]}"`:''}>${img(S.f,4,0,0,'ui')}<div class="ucb"><b>🎖 ${G[0]}</b><div class="ucs"><span>❤${u[1]}</span><span>🛡${u[2]}</span><span>⚔${u[3]}</span><span>👣${u[4]}</span><span>⭐ Level-Aufstieg · 🌳 Fertigkeiten</span></div><div class="ucf">${btn}</div></div></div>`}
 /* Fenster für General (eigene Einheit) und Bosse (Zombie-Modus) */
-function umRender(){const S=st[0],u=su;if(!u||u.hp<=0||!units.includes(u)){su=null;return bmClose()}
+function umRender(){const S=st[0],u=su;if(!u||u.hp<=0||!units.includes(u)){su=null;return bmClose()}$('bm').classList.toggle('mb',!!(u.s===0&&(u.gen||u.reg)));
  if(u.boss){$('bmc').innerHTML=ZM.bossHtml(u);return umLive()}
  if(u.reg){$('bmc').innerHTML=RG.html(u);return umLive()}
  if(!(u.gen&&u.s===0)){$('bmc').innerHTML=unitHtml(u);return umLive()}
@@ -4345,7 +4357,7 @@ document.addEventListener('click',e=>{const g=e.target.closest('.sgrip');if(!g)r
 /* ---------- Seitenweise Anzeige: so viele Karten, wie ohne Scrollen in das untere Fenster passen ---------- */
 const PGS={};
 function sheetBox(el){if(el&&el.clientHeight>40){const cs=getComputedStyle(el);return{w:el.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),h:el.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)}}const land=matchMedia('(max-height:480px) and (min-aspect-ratio:3/2)').matches,mnh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mnh'))||0;
- return land?{w:innerWidth-Math.min(innerWidth*.46,440)-12-20,h:innerHeight*.6-30}:{w:Math.min(innerWidth-16,1000)-26,h:Math.min(innerHeight*.5,innerHeight-mnh-64)-34}}
+ return land?{w:Math.min(innerWidth-12,Math.max(innerWidth*.7,480))-20,h:innerHeight-mnh-54-30}:{w:Math.min(innerWidth-16,1200)-26,h:Math.min(innerHeight*.58,innerHeight-mnh-64)-34}}
 const FITR={};function fitAgain(key,el){if(el&&el.scrollHeight>el.clientHeight+2&&(FITR[key]||9)>1){FITR[key]=(FITR[key]||Math.max(1,PGF[key]||1))-1;return true}return false}const PGF={};
 const SHB={};let SHL=0;
 function fitShb(key,el){const s=el&&el.querySelector('.shb');if(!s)return false;const h=s.clientHeight;if(h>20&&Math.abs((SHB[key]||0)-h)>2&&SHL<3){SHB[key]=h;SHL++;return true}SHL=0;return false}
@@ -5156,7 +5168,7 @@ $('gsk').onclick=e=>{const b=e.target.closest('[data-g]');if(!b){if(e.target===$
 const tOpen=id=>{const e=$(id);return!!e&&e.style.display==='flex'};
 const tHLI=()=>R.findIndex(r=>r.k==='hl');
 /* Vollbild-Menüs offen? Dann schrumpft die Texttafel zu einer schmalen Leiste am unteren Rand */
-const tFs=()=>tOpen('bd')||tOpen('rm')||tOpen('gsk')||tOpen('bm'),tCmp=s=>!!(s&&s.act&&(tFs()||tOpen('rk')||tOpen('cm')));
+const tFs=()=>tOpen('gsk'),tCmp=s=>!!(s&&s.act&&(tFs()||tOpen('bd')||tOpen('rm')||tOpen('bm')||tOpen('rk')||tOpen('cm')));
 const tNeed={bup:()=>bcost(0,LV.rax[0]),tow:()=>bcost(0,TT[0][0]),hall:()=>{const S=st[0];let c=0;for(let l=S.lv;l<5;l++)c+=bcost(0,HC[l-1]);return c},gen:()=>GENU[0],sch:()=>bcost(0,COST.sch),res:()=>R[tHLI()].p,mine:()=>bcost(0,COST.mine),miner:()=>80,rax:()=>bcost(0,COST.rax),units:()=>5*uc(0,UT[SB.rax[0][0]][SB.rax[0][1]][0],SB.rax[0][0]),wall:()=>bcost(0,WT[0][0])};
 /* welcher Knopf gerade blinken soll: erst das Menü unten, dann der Reiter, dann der eigentliche Knopf */
 const tBuild=(tb,a)=>!tOpen('bd')?'#mn [data-a="m,b"]':bdTab!==tb?`#bd [data-a="bt,${tb}"]`:`#bd [data-a="${a}"]`;
@@ -5179,7 +5191,7 @@ TUT.steps=[
  {t:'Mit Forschung stärker werden',x:'Gut gekämpft! Mit <b>Forschung</b> verbesserst du die Werte deiner Truppen und Gebäude. In der <b>Schule</b> erforschst du zum Beispiel Tempo, Heilung, Reichweite und Wirtschaft, in der <b>Schmiede</b> Waffen, Rüstung und Belagerung. Beide Gebäude kannst du später ausbauen (Akademie und verbesserte Schmiede) – dann werden stärkere Forschungen frei.',next:'Weiter ▸'},
  {t:'Baue die Schule',x:'Tippe auf <b>Bauen</b>, wähle den Reiter <b>Forschung</b> und baue die <b>Schule</b>.',act:1,need:'sch',done:()=>!!st[0].b.sch,hl:()=>tBuild('res','b,sch')},
  {t:'Erforsche das Feldlazarett',x:'Tippe unten auf <b>Forschung</b> und wähle <b>Feldlazarett</b>: Danach heilen sich deine Einheiten, sobald sie eine Weile nicht kämpfen. Jede Forschung wirkt sofort und für den Rest des Spiels.',act:1,need:'res',on:()=>{if(typeof rcat!=='undefined')rcat='heer'},
-  done:()=>Object.keys(st[0].done).length>0,hl:()=>{if(!tOpen('rm'))return'#mn [data-a="m,f"]';const a=`#rm [data-a="r,${tHLI()}"]`;return document.querySelector(a)?a:rcat!=='heer'?'#rm [data-a="rc,heer"]':'#rm [data-a^="r,"]'}},
+  done:()=>Object.keys(st[0].done).length>0,hl:()=>{if(!tOpen('rm'))return'#mn [data-a="m,f"]';const a=`#rm [data-a="r,${tHLI()}"]`;if(document.querySelector(a))return a;if(rcat!=='heer')return'#rm [data-a="rc,heer"]';const nx=document.querySelector('#rm [data-a="pg,rm,1"]:not([disabled])'),pv=document.querySelector('#rm [data-a="pg,rm,-1"]:not([disabled])');const R0=R.map((r,i)=>[r,i]).filter(x=>x[0].c==='heer').findIndex(x=>x[1]===tHLI()),per=document.querySelectorAll('#rm .rcd').length||1;return Math.floor(R0/per)>(PGS.rm||0)?(nx?'#rm [data-a="pg,rm,1"]':null):(pv?'#rm [data-a="pg,rm,-1"]':null)}},
  {t:'Baue die Kaserne aus',x:'Gebäude kannst du <b>ausbauen</b>: Jede Stufe schaltet eine stärkere Einheit frei und macht das Gebäude widerstandsfähiger. Tippe auf <b>Bauen</b>, bleib im Reiter <b>Militär</b> und tippe bei der <b>Kaserne</b> auf <b>Stufe 2</b>.',act:1,need:'bup',done:()=>!!(st[0].b.rax&&st[0].b.rax.lv>=2),hl:()=>tBuild('mil','bu,rax')},
  {t:'Die Halle schützt dich',x:'Sehr gut! Übrigens: Deine <b>Halle</b> beschützt die Basis mit Pfeilen – oben links siehst du ihre Lebenspunkte. Gegen eine ganze Armee reicht das aber nicht. Ein <b>Mauerring</b> mit Torhäusern hält Feinde draußen, deine eigenen Truppen kommen durch die Tore.',next:'Weiter ▸',hl:()=>'#hpp'},
  {t:'Baue den Mauerring',x:'Tippe auf <b>Bauen</b>, wähle den Reiter <b>Verteidigung</b> und baue den <b>Holzwall</b>.',act:1,need:'wall',done:()=>st[0].wl>=1,hl:()=>tBuild('def','w')},
